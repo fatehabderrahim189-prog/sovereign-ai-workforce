@@ -1,0 +1,19 @@
+{
+  "name": "sovereign-ai-workforce",
+  "version": "0.2.0",
+  "description": "Autonomous AI Workforce Platform — USAII Global AI Hackathon 2026",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.1",
+    "vite": "^5.4.2"
+  }
+}

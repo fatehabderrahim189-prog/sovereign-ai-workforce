@@ -1,219 +1,97 @@
-# Sovereign AI Workforce
+rency and human control.
+# Sovereign AI Workforce (SAW)
 
-## A Human-Governed Multi-Agent AI Research Prototype
+**A research prototype exploring schema-enforced approval gating (SEAG) for human-in-the-loop governance in multi-agent AI systems.**
 
-Artificial Intelligence • Multi-Agent Systems • AI Governance • Human-Centered AI
+Fateh Abderrahim Boukhalfa · USTHB, Algiers, Algeria
 
----
-
-# 🚀 Live Experiences
-
-## 🌐 Official Interactive Demo
-
-Explore the main Sovereign AI Workforce experience and discover the vision of a human-governed multi-agent AI system through an interactive digital interface.
-
-🔗 https://sovereign-ai-workforce.netlify.app/
+📄 Paper (Zenodo, v1.3): https://doi.org/10.5281/zenodo.22181452
+📝 Conference abstract: ICSO 2026 (submission CONF2026-KLMLW4)
 
 ---
 
-## 📱 Mobile Application Prototype
+## What is verified vs. what is designed
 
-Experience the mobile-oriented prototype designed to demonstrate intelligent workflows, AI workforce interaction, and human-AI collaboration concepts.
+This project has two distinct parts. Please read this table before anything else — it is the single most important thing in this README:
 
-🔗 https://classy-alfajores-f789a5.netlify.app/
+| Component | Status |
+|---|---|
+| **SEAG design pattern** (Section 4 of the paper): FastAPI backend, PostgreSQL schema, 7-agent orchestration, semantic memory | 📝 **Design specification.** Not yet deployed or run end-to-end. |
+| **Experiment 1** (Section 5.4 of the paper): SEAG vs. interface-layer baseline under 3 simulated failure conditions | ✅ **Executed and independently reproducible.** Code and raw results in [`experiment1/`](experiment1/). |
+| **Interactive demo** (see below) | ✅ **Live and working**, but is a frontend simulation — it does not implement the FastAPI/PostgreSQL backend described in Section 4. |
 
----
-
-# Overview
-
-Sovereign AI Workforce is a research-driven prototype exploring the future of human-governed multi-agent artificial intelligence systems.
-
-The project investigates how specialized AI agents can collaborate, coordinate tasks, and support human decision-making while maintaining transparency, responsibility, and meaningful human oversight.
-
-Rather than replacing human intelligence, this project explores a model where AI systems become collaborative partners within a governed and trustworthy framework.
+An earlier version of the paper (v1.0–v1.2) also reported "42 demonstration workflow runs" from the Section 4 backend. **That data was retracted in v1.3** because the backend had not, in fact, been deployed and run at the time. See the paper's Version History for the full correction. This README reflects the corrected, current status.
 
 ---
 
-# Vision
+## Experiment 1 — the verified result
 
-To explore a future where artificial intelligence systems amplify human capabilities through:
+**Research question:** does schema-enforced approval gating (SEAG) provide a measurable, structural guarantee against unauthorized or duplicate execution, compared to a conventional interface-layer approval mechanism?
 
-- Responsible autonomy
-- Human-centered design
-- Transparent decision processes
-- Collaborative intelligence
+`experiment1/` contains a real, minimal reimplementation of both design patterns — `InterfaceLayerSystem` (no precondition check) and `SEAGSystem` (SQLite, foreign-key-constrained, transaction-gated) — tested under three failure conditions, 500 trials per condition (200 additional stress trials for Condition C at 5 threads):
 
----
+| Condition | Interface-Layer | SEAG |
+|---|---|---|
+| A — Automated bypass | 100.0% (500/500) | **0.0% (0/500)** |
+| B — Network interruption (~30%) | 32.2% (161/500) | **0.0% (0/500)** |
+| C — Concurrent approval (2 threads) | 100.0% (500/500) | **0.0% (0/500)** |
+| C — Stress test (5 threads) | — | **0.0% (0/200)** |
 
-# Research Motivation
+Reproduce it yourself:
+```bash
+cd experiment1/
+python3 experiment_runner.py
+```
+Deterministic given `random.seed(42)` — re-running produces identical numbers.
 
-As AI systems become increasingly capable, important questions emerge:
-
-- How can multiple AI agents collaborate safely?
-- How can humans maintain meaningful control?
-- How can autonomous workflows remain transparent and accountable?
-
-Sovereign AI Workforce explores these challenges through a practical research prototype.
-
----
-
-# Core Concepts
-
-## Human-Governed AI
-
-Maintaining human oversight as a central principle in autonomous workflows.
-
-## Multi-Agent Collaboration
-
-Exploring specialized AI agents working together toward complex objectives.
-
-## Responsible AI Orchestration
-
-Designing AI workflows with transparency, accountability, and reliability.
-
-## Human-AI Partnership
-
-Investigating how AI can augment human creativity, productivity, and decision-making.
+**Scope:** this tests the SEAG *design pattern* via an independent, minimal reimplementation — not the FastAPI/PostgreSQL backend described in Section 4, which does not yet exist as a running system. It does not constitute a penetration test against a deployed, internet-facing application. Full discussion of scope and limitations: paper Section 5.4 and 6.1.
 
 ---
 
-# Key Features
+## Interactive demo
 
-## Intelligent Workforce Architecture
+🔗 Live demo: https://sovereign-ai-workforce.netlify.app/
 
-A conceptual framework for coordinating specialized AI agents.
-
-## Interactive Digital Experience
-
-A collection of interfaces demonstrating AI workforce concepts and system interaction.
-
-## Research Documentation
-
-Includes:
-
-- System Architecture
-- Design System
-- AI Governance Concepts
-- Strategy Documentation
-- Pitch Deck
-- Hackathon Submission Package
+The demo illustrates the intended agent-orchestration and approval-flow concept — seven simulated agents coordinating on a request and pausing for human approval. It runs entirely client-side (state kept in the browser), calling the Claude API for agent text generation. **It does not implement the schema-enforced backend described in Section 4** — there is no PostgreSQL database, no foreign-key-constrained approval record, and no server-side enforcement. Treat it as a UI/UX concept demonstration, not evidence that Section 4's design has been built.
 
 ---
 
-# System Architecture
+## Repository contents
 
-Conceptual workflow:
----
+- [`experiment1/`](experiment1/) — `systems.py`, `experiment_runner.py`, `results.json`: the verified Experiment 1 (see above)
+- `sovereign-ai-workforce-research-paper-v1.3.pdf` — the current, corrected version of the paper
+- `index.html`, `mobile-app.html` — the interactive demo and a mobile UI concept (design mockup — see note below)
+- `LICENSE`, `CITATION.cff`, `SECURITY.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `CHANGELOG.md`
 
-# Technology Exploration
-
-The project explores concepts related to:
-
-- Artificial Intelligence
-- Multi-Agent Systems
-- Large Language Models
-- AI Orchestration
-- Human-AI Interaction
-- Modern Web Technologies
-- Data-driven Systems
+**Note on `mobile-app.html`:** this is a UI/UX design mockup (10 screens), not a built application. Labels within it such as "SOC 2," "GDPR compliant," or "Connected · live" describe a target design direction and are not real certifications or integrations.
 
 ---
 
-# Repository Contents
+## Roadmap
 
-This repository includes:
-
-## 📄 Research Documentation
-
-- Architecture Documentation
-- Design System Documentation
-- Strategy Materials
-- Pitch Deck
-- Submission Package
-
-## 🔧 Open Source Infrastructure
-
-- LICENSE
-- CITATION.cff
-- CONTRIBUTING.md
-- CODE_OF_CONDUCT.md
-- SECURITY.md
-- CHANGELOG.md
+- [x] Design the SEAG pattern (Section 4)
+- [x] Execute and independently verify Experiment 1 — SEAG vs. interface-layer baseline (Section 5.4, `experiment1/`)
+- [ ] Deploy the FastAPI/PostgreSQL backend described in Section 4 end-to-end
+- [ ] Re-run Experiment 1 against the deployed backend directly, not the minimal reimplementation
+- [ ] Connect the live demo to the real backend
+- [ ] Real-organizational pilot (paper Section 7.2)
 
 ---
 
-# Project Status
+## Citation
 
-## v1.0.0 — Research Prototype
+```
+Boukhalfa, F. A. (2026). Schema-Enforced Approval Gates in Multi-Agent AI
+Orchestration: A Structural Approach to Human-in-the-Loop Governance
+(Version v1.3). Zenodo. https://doi.org/10.5281/zenodo.22181452
+```
 
-Initial public release introducing the foundation of the Sovereign AI Workforce concept.
+See `CITATION.cff` for the machine-readable version.
 
----
+## License
 
-# Roadmap
+MIT — see `LICENSE`.
 
-## Phase 1 — Foundation
+## Author
 
-- Expand research documentation
-- Improve system architecture
-- Refine user experience
-
-## Phase 2 — Intelligence
-
-- Explore advanced agent coordination
-- Develop evaluation approaches
-- Improve system reliability
-
-## Phase 3 — Research Expansion
-
-- Investigate governance mechanisms
-- Explore scalable AI workforce models
-- Publish technical insights
-
----
-
-# Hackathon
-
-Developed for:
-
-**USAII Global AI Hackathon 2026**
-
-This project represents an exploration of responsible AI systems and human-centered autonomous technologies.
-
----
-
-# Citation
-
-If you reference this project:
----
-
-# License
-
-This project is licensed under the MIT License.
-
-See the LICENSE file for details.
-
----
-
-# Author
-
-**Fateh Abderrahim Boukhalfa**
-
-Independent AI Research Initiative
-
-Exploring responsible artificial intelligence, multi-agent systems, and human-centered autonomous technologies.
-
----
-
-# Acknowledgment
-
-This project represents a continuous exploration of how emerging AI systems can enhance human capability while preserving responsibility, transparency, and trust.
-## Research Question
-
-This project explores a central question:
-
-How can multi-agent AI systems increase autonomy and capability while preserving human understanding, oversight, and accountability?
-## Personal Learning
-
-Building this prototype changed my perspective on AI systems.
-I initially focused on increasing capability, but discovered that scalable intelligence requires equally strong mechanisms for transparency and human control.
+**Fateh Abderrahim Boukhalfa**, Engineering student, USTHB, Algiers, Algeria

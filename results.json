@@ -1,0 +1,45 @@
+{
+  "condition_A_automated_bypass": {
+    "Interface-Layer": {
+      "n": 500,
+      "violations": 500,
+      "rate": 1.0
+    },
+    "SEAG": {
+      "n": 500,
+      "violations": 0,
+      "rate": 0.0
+    }
+  },
+  "condition_B_network_interruption_30pct": {
+    "Interface-Layer": {
+      "n": 500,
+      "violations": 161,
+      "rate": 0.322
+    },
+    "SEAG": {
+      "n": 500,
+      "violations": 0,
+      "rate": 0.0
+    }
+  },
+  "condition_C_concurrent_2threads": {
+    "Interface-Layer": {
+      "n": 500,
+      "incidents": 500,
+      "rate": 1.0
+    },
+    "SEAG": {
+      "n": 500,
+      "incidents": 0,
+      "rate": 0.0
+    }
+  },
+  "condition_C_stress_5threads": {
+    "SEAG": {
+      "n": 200,
+      "incidents": 0,
+      "rate": 0.0
+    }
+  }
+}

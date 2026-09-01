@@ -1,4 +1,3 @@
-rency and human control.
 # Sovereign AI Workforce (SAW)
 
 **A research prototype exploring schema-enforced approval gating (SEAG) for human-in-the-loop governance in multi-agent AI systems.**
@@ -16,9 +15,11 @@ This project has two distinct parts. Please read this table before anything else
 
 | Component | Status |
 |---|---|
-| **SEAG design pattern** (Section 4 of the paper): FastAPI backend, PostgreSQL schema, 7-agent orchestration, semantic memory | 📝 **Design specification.** Not yet deployed or run end-to-end. |
+| **SEAG design pattern** (Section 4 of the paper): FastAPI backend, PostgreSQL schema, 7-agent orchestration, semantic memory | 📝 **Design specification** (full system) — not yet deployed end-to-end. **A minimal version of the core approval-gate mechanism has been implemented, deployed, and tested** — see [`backend_minimal/`](backend_minimal/). |
 | **Experiment 1** (Section 5.4 of the paper): SEAG vs. interface-layer baseline under 3 simulated failure conditions | ✅ **Executed and independently reproducible.** Code and raw results in [`experiment1/`](experiment1/). |
 | **Interactive demo** (see below) | ✅ **Live and working**, but is a frontend simulation — it does not implement the FastAPI/PostgreSQL backend described in Section 4. |
+
+**New:** the core SEAG approval-gate mechanism now has a minimal, real, executed implementation — a working HTTP server tested against real requests, including a genuine bug found and fixed during testing. See [`backend_minimal/README.md`](backend_minimal/README.md) for full detail, honestly scoped (Python stdlib, not the full FastAPI/PostgreSQL design).
 
 An earlier version of the paper (v1.0–v1.2) also reported "42 demonstration workflow runs" from the Section 4 backend. **That data was retracted in v1.3** because the backend had not, in fact, been deployed and run at the time. See the paper's Version History for the full correction. This README reflects the corrected, current status.
 
@@ -44,7 +45,23 @@ python3 experiment_runner.py
 ```
 Deterministic given `random.seed(42)` — re-running produces identical numbers.
 
-**Scope:** this tests the SEAG *design pattern* via an independent, minimal reimplementation — not the FastAPI/PostgreSQL backend described in Section 4, which does not yet exist as a running system. It does not constitute a penetration test against a deployed, internet-facing application. Full discussion of scope and limitations: paper Section 5.4 and 6.1.
+**Scope:** this tests the SEAG *design pattern* via an independent, minimal reimplementation — not the FastAPI/PostgreSQL backend described in Section 4, which does not yet exist as a full running system. It does not constitute a penetration test against a deployed, internet-facing application. Full discussion of scope and limitations: paper Section 5.4 and 6.1.
+
+---
+
+## Minimal backend — real, deployed, tested
+
+`backend_minimal/` contains a genuinely running HTTP server implementing the SEAG approval-gate logic — a `WorkflowRun` state machine enforced via SQLite foreign-key constraints and a transaction-gated approval endpoint, structurally equivalent to the `/workflow/approve` endpoint described in the paper's Section 4.2.
+
+**Honest scope:** this was built in a sandboxed environment without internet access, so the specific FastAPI + PostgreSQL + pgvector stack described in Section 4 could not be installed. This is a minimal stand-in using Python's standard library only (`http.server` + `sqlite3`) — it demonstrates and tests the core governance mechanism, not the full multi-agent system.
+
+During testing, a real bug was found and fixed: SQLite's `FOREIGN KEY` constraint does not reject `NULL` values by default, so an approval request with a *missing* `user_id` (as opposed to a forged one) initially slipped through. This was fixed with an explicit application-level check — exactly the kind of gap the paper's Section 6.1 already flags as a known limitation of FK-only enforcement. Full detail, including the failing run before the fix: [`backend_minimal/README.md`](backend_minimal/README.md).
+
+Reproduce it yourself:
+```bash
+cd backend_minimal/
+python3 demo.py
+```
 
 ---
 
@@ -59,6 +76,7 @@ The demo illustrates the intended agent-orchestration and approval-flow concept 
 ## Repository contents
 
 - [`experiment1/`](experiment1/) — `systems.py`, `experiment_runner.py`, `results.json`: the verified Experiment 1 (see above)
+- [`backend_minimal/`](backend_minimal/) — `server.py`, `demo.py`, `demo_output.log`: the real, deployed minimal SEAG backend (see above)
 - `sovereign-ai-workforce-research-paper-v1.3.pdf` — the current, corrected version of the paper
 - `index.html`, `mobile-app.html` — the interactive demo and a mobile UI concept (design mockup — see note below)
 - `LICENSE`, `CITATION.cff`, `SECURITY.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `CHANGELOG.md`
@@ -71,7 +89,8 @@ The demo illustrates the intended agent-orchestration and approval-flow concept 
 
 - [x] Design the SEAG pattern (Section 4)
 - [x] Execute and independently verify Experiment 1 — SEAG vs. interface-layer baseline (Section 5.4, `experiment1/`)
-- [ ] Deploy the FastAPI/PostgreSQL backend described in Section 4 end-to-end
+- [x] Implement, deploy, and test a minimal version of the core approval-gate mechanism (`backend_minimal/`)
+- [ ] Deploy the full FastAPI/PostgreSQL backend described in Section 4 end-to-end
 - [ ] Re-run Experiment 1 against the deployed backend directly, not the minimal reimplementation
 - [ ] Connect the live demo to the real backend
 - [ ] Real-organizational pilot (paper Section 7.2)

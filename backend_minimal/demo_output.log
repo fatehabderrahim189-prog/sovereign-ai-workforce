@@ -1,0 +1,20 @@
+======================================================================
+SEAG minimal backend — live demonstration run
+======================================================================
+
+[1] Triggered run 35cebb05-ca7c-4ff5-b407-90e58acc798c -> {'id': '35cebb05-ca7c-4ff5-b407-90e58acc798c', 'status': 'awaiting_approval'}
+    State before approval: awaiting_approval
+    Legitimate approval -> HTTP 200 -> {'id': '35cebb05-ca7c-4ff5-b407-90e58acc798c', 'status': 'executed', 'approved_by': 'human_reviewer_1'}
+
+[2] Re-approval attempt on already-executed run -> HTTP 400 -> {'error': 'not in awaiting_approval state', 'status': 'executed'}
+
+[3] Bypass attempt with forged user_id -> HTTP 403 -> {'error': 'approval rejected: FOREIGN KEY constraint failed'}
+    Run state after bypass attempt: awaiting_approval (still awaiting_approval = gate held)
+
+[4] Approval attempt with no user_id -> HTTP 403 -> {'error': 'approval rejected: user_id is required'}
+
+[5] Query non-existent run -> HTTP 404 -> {'error': 'run not found'}
+
+======================================================================
+All 5 checks passed. This is a real, executed run — see seag_demo.db
+======================================================================
